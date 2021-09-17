@@ -20,10 +20,11 @@
         "./*"
       ],
       "@/*": [
-        "./*"
+        "./client/*"
       ]
     },
     "types": [
+      "./types",
       "@nuxt/types",
       "@nuxtjs/axios",
       "@types/node"
