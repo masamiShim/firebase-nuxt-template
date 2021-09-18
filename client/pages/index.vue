@@ -6,15 +6,16 @@
         <VuetifyLogo />
       </v-card>
       <v-card>
-        {{ message }}
-        <my-input-text-field v-model="state.emailAddress" :check="rules.emailAddress" counter="30" disabled />
 
         <v-card-title class="headline">
           Welcome to the Vuetify + Nuxt.js template
         </v-card-title>
         <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower
-            developers to create amazing applications.</p>
+          {{ message }}
+          <my-input-text-field
+            v-model="state.emailAddress"
+            :check="rules.emailAddress" />
+
           <p>
             For more information on Vuetify, check out the <a
             href="https://vuetifyjs.com"
@@ -88,11 +89,8 @@ import MyInputTextField from "@/components/form/MyInputTextField.vue"
 
 export default defineComponent({
   components: { MyInputTextField },
-  setup(_, ctx) {
+  setup(_, __) {
     const message = ref<String>("message")
-    console.log(ctx.attrs)
-    console.log(ctx.slots)
-    console.log(ctx.emit)
 
     const state = reactive({
       emailAddress: "eeeee@bbbb.com"
