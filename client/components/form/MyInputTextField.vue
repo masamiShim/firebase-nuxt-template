@@ -1,5 +1,4 @@
 <template>
-  <div>
     <v-text-field v-model="_value"
                   :error="v$.$invalid"
                   :error-messages="v$.$errors.map((e) => e.$message)"
@@ -8,7 +7,6 @@
     >
 
     </v-text-field>
-  </div>
 </template>
 
 <script lang="ts">

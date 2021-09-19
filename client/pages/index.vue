@@ -11,11 +11,11 @@
           Welcome to the Vuetify + Nuxt.js template
         </v-card-title>
         <v-card-text>
-          {{ message }}
           <my-input-text-field
             v-model="state.emailAddress"
             :check="rules.emailAddress" />
-
+          <modal width="500" :open.sync="open"></modal>
+          <v-btn @click.stop="handleOpen()">オープン</v-btn>
           <p>
             For more information on Vuetify, check out the <a
             href="https://vuetifyjs.com"
@@ -23,26 +23,6 @@
             rel="noopener noreferrer"
           >
             documentation
-          </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-            href="https://chat.vuetifyjs.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="chat"
-          >
-            discord
-          </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-            href="https://github.com/vuetifyjs/vuetify/issues"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="contribute"
-          >
-            issue board
           </a>.
           </p>
           <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the
@@ -57,14 +37,6 @@
             rel="noopener noreferrer"
           >
             Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
           </a>
         </v-card-text>
         <v-card-actions>
@@ -86,11 +58,12 @@
 import { email, helpers, required } from "@vuelidate/validators"
 import { defineComponent, reactive, ref } from "@nuxtjs/composition-api"
 import MyInputTextField from "@/components/form/MyInputTextField.vue"
+import Modal from "@/components/modal/ModalBase.vue"
 
 export default defineComponent({
-  components: { MyInputTextField },
+  components: { Modal, MyInputTextField },
   setup(_, __) {
-    const message = ref<String>("message")
+    const open = ref<Boolean>(false)
 
     const state = reactive({
       emailAddress: "eeeee@bbbb.com"
@@ -102,7 +75,9 @@ export default defineComponent({
       }
     }
 
-    return { message, state, rules }
+    const handleOpen = () => { open.value = true }
+
+    return { state, rules, open, handleOpen }
   }
 })
 </script>
