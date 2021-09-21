@@ -1,73 +1,54 @@
-import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import { actionTree, getterTree, mutationTree } from "typed-vuex"
 
 type AuthToken = {
   accessToken: string
   refreshToken: string
 }
 
-const ignoreRoutes = ['/login', '/logout']
+const ignoreRoutes = ["/login", "/logout"]
 
-@Module({
-  name: 'auth',
-  stateFactory: true,
-  namespaced: true,
-  preserveState: true,
+export const state = () => ({
+  auth: null as AuthToken | null,
+  // This is correct
+  resumeRoute: null as string | null
 })
-export default class Auth extends VuexModule {
-  private auth: AuthToken | null = null
 
-  private resumeRoute: string | null = null
+export const getters = getterTree(state, {
+  isAuthorized: (state) => !!state.auth,
+  accessToken: (state) => state.auth?.accessToken,
+  refreshToken: (state) => state.auth?.refreshToken,
+  resumeRoute: (state) => state.resumeRoute
+})
 
-  public get isAuthorized() {
-    return !!this.auth
-  }
-
-  public get accessToken(): string {
-    return this.auth?.accessToken || ''
-  }
-
-  public get refreshToken(): string {
-    return this.auth?.refreshToken || ''
-  }
-
-  public get resumedRoute(): string | null {
-    return this.resumeRoute
-  }
-
-  @Mutation
-  private set(auth?: AuthToken) {
+export const mutations = mutationTree(state, {
+  setToken: (state, auth?: AuthToken) => {
     if (!auth) {
-      this.auth = null
+      state.auth = null
     } else {
-      this.auth = auth
+      state.auth = auth
     }
-  }
-
-  @Mutation
-  private setRoute(routePath?: string) {
+  },
+  setRoute: (state, routePath?: string) => {
     if (!routePath) {
-      this.resumeRoute = null
+      state.resumeRoute = null
     } else {
-      this.resumeRoute = routePath
+      state.resumeRoute = routePath
     }
   }
+})
 
-  @Action({ rawError: true })
-  public async setAuth(payload: AuthToken) {
-    await this.set(payload)
-  }
-
-  @Action({ rawError: true })
-  public async logout() {
-    await this.set()
-  }
-
-  @Action({ rawError: true })
-  public async redirectRoute(route?: string) {
+export const actions = actionTree({ state }, {
+  login({ commit }, token: AuthToken) {
+    commit("setToken", token)
+  },
+  logout({ commit }) {
+    commit("setToken")
+  },
+  async redirectRoute({ commit }, route?: string) {
     if (!route || ignoreRoutes.includes(route)) {
-      await this.setRoute()
+      await commit("setRoute")
     } else {
-      await this.setRoute(route)
+      await commit("setRoute", route)
     }
   }
-}
+})

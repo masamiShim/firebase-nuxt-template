@@ -22,7 +22,9 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn text color="primary">リセット用メールを送信する</v-btn>
+      <v-btn text
+             :disabled="v$.$invalid"
+             color="primary">リセット用メールを送信する</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -30,10 +32,12 @@
 <script lang="ts">
 import { defineComponent, reactive } from "@nuxtjs/composition-api"
 import { email, helpers, required } from "@vuelidate/validators"
+import { useVuelidate } from "@vuelidate/core"
 import MyInputTextField from "@/components/form/MyInputTextField.vue"
 
 export default defineComponent({
   components: { MyInputTextField },
+  layout: 'noauth',
   setup(_, __) {
     const state = reactive({
       email: ""
@@ -41,12 +45,14 @@ export default defineComponent({
 
     const rules = {
       email: {
-        required: helpers.withMessage("メールアドレスを入力して下さい。", required),
-        email: helpers.withMessage("メールアドレスの形式が不正です。", email)
+        required: helpers.withMessage("メールアドレスを入力して下さい", required),
+        email: helpers.withMessage("メールアドレスの形式が不正です", email)
       }
     }
+    const validations = {}
+    const v$ = useVuelidate(validations, {})
 
-    return { state, rules }
+    return { state, rules, v$ }
   }
 })
 </script>

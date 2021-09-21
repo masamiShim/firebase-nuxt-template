@@ -10,7 +10,8 @@ const ls = new SecureLS({
 
 const persistPlugin: Plugin = ({store}) => {
   new VuexPersistence({
-    key: 'o3-persist',
+    key: 'front-template-persist',
+    storage: window.localStorage,
     saveState: (key: any, state: any, _: any) => {
       ls.set(key, state)
     },

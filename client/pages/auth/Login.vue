@@ -6,7 +6,7 @@
     <v-card-text class="pa-4">
       <my-input-text-field
         v-model="state.email"
-        :check="state.email"
+        :check="{ email: rules.email}"
         type="text"
         prepend-icon="mdi-account-circle"
         label="メールアドレス"
@@ -14,7 +14,7 @@
       </my-input-text-field>
       <my-input-text-field
         v-model="state.password"
-        :check="state.password"
+        :check="{ password: rules.password}"
         prepend-icon="mdi-lock"
         append-icon="mdi-eye-off"
         label="パスワード"
@@ -22,45 +22,66 @@
       >
       </my-input-text-field>
       <v-flex>
-        <a href="#">パスワードを忘れた方はこちら</a>
+        <NuxtLink to="/reset/password">パスワードを忘れた方はこちら</NuxtLink>
       </v-flex>
     </v-card-text>
     <v-card-actions>
       <v-spacer />
       <v-btn
-        color="primary">
+        color="primary"
+        :disabled="v$.$invalid"
+        @click="handleLogin"
+      >
         ログイン
       </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import { email, helpers, required } from "@vuelidate/validators"
-import { defineComponent, reactive } from "@nuxtjs/composition-api"
-import MyInputTextField from "@/components/form/MyInputTextField"
+import { defineComponent, reactive, useContext, useRouter } from "@nuxtjs/composition-api"
+import { useVuelidate } from "@vuelidate/core"
+import MyInputTextField from "@/components/form/MyInputTextField.vue"
 
+type LoginForm = {
+  email: string,
+  password: string
+}
 
 export default defineComponent({
   components: { MyInputTextField },
-  setup(_, __) {
+  layout: "noauth",
+  setup(_) {
+    const { $accessor } = useContext()
+    const router = useRouter()
 
-    const state = reactive({
+
+    const state = reactive<LoginForm>({
       email: "",
       password: ""
     })
 
     const rules = {
       email: {
-        required: helpers.withMessage("メールアドレスを入力して下さい。", required),
-        email: helpers.withMessage("メールアドレスの形式が不正です。", email)
+        required: helpers.withMessage("メールアドレスを入力して下さい", required),
+        email: helpers.withMessage("メールアドレスの形式が不正です", email)
       },
       password: {
-        required: helpers.withMessage("パスワードを入力して下さい。", required)
+        required: helpers.withMessage("パスワードを入力して下さい", required)
       }
     }
 
-    return { state, rules }
+    const validations = {}
+    const v$ = useVuelidate(validations, {})
+
+
+    const handleLogin = () => {
+      $accessor.auth.login({ accessToken: "a", refreshToken: "b" })
+      router.push("/service")
+    }
+
+    return { state, rules, handleLogin, v$ }
 
   }
 })
