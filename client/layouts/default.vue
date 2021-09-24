@@ -1,5 +1,7 @@
 <template>
   <v-app dark>
+    <global-loader />
+    <my-toast/>
     <v-navigation-drawer
       v-model="state.drawer"
       :mini-variant="state.miniVariant"
@@ -58,7 +60,7 @@
       </v-btn>
     </v-app-bar>
     <v-main>
-      <v-container>
+      <v-container v-show="!globalLoading">
         <Nuxt />
       </v-container>
     </v-main>
@@ -89,12 +91,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, reactive, useContext, useRouter } from "@nuxtjs/composition-api"
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  reactive,
+  useContext,
+  useRouter
+} from "@nuxtjs/composition-api"
+import MyToast from "@/components/util/MyToast.vue"
+import GlobalLoader from "@/components/util/GlobalLoader.vue"
 
 export default defineComponent({
+  components: { GlobalLoader, MyToast },
   setup(_) {
     const ctx = useContext()
-
+    const globalLoading = computed(() => ctx.$accessor.loading.isLoading)
     const router = useRouter()
 
     const state = reactive({
@@ -118,13 +131,15 @@ export default defineComponent({
       rightDrawer: false,
       title: "Vuetify.js"
     })
-    const visibleHandler = () => {
-
+    const visibleHandler = async () => {
       if (window.document.visibilityState === "visible") {
+        ctx.$accessor.loading.start()
         // コンテンツ表示
         if (!ctx.$accessor.auth.isAuthorized) {
-          router.push("/auth/login")
+          ctx.$accessor.loading.complete()
+          await router.push("/auth/login")
         }
+        ctx.$accessor.loading.complete()
       }
 
       if (window.document.visibilityState === "hidden") {
@@ -138,7 +153,7 @@ export default defineComponent({
     onUnmounted(() => {
       window.document.removeEventListener("visibilitychange", visibleHandler)
     })
-    return { state }
+    return { state, globalLoading }
   }
 })
 </script>

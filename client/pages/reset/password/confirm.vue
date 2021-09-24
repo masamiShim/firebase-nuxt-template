@@ -42,13 +42,22 @@
       <v-btn text color="primary"
              :disabled="v$.$invalid"
              @click="handleChangePassword()"
-      >パスワードを変更する</v-btn>
+      >パスワードを変更する
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "@nuxtjs/composition-api"
+import {
+  computed,
+  defineComponent,
+  onBeforeMount,
+  reactive,
+  useContext,
+  useRoute,
+  useRouter
+} from "@nuxtjs/composition-api"
 import { helpers, required, sameAs } from "@vuelidate/validators"
 import { useVuelidate } from "@vuelidate/core"
 import MyInputTextField from "@/components/form/MyInputTextField.vue"
@@ -57,11 +66,13 @@ export default defineComponent({
   components: { MyInputTextField },
   layout: "noauth",
   setup(_, __) {
+    const ctx = useContext()
 
     const state = reactive({
       password: "",
       confirm: ""
     })
+
     // vuelidateだと動的パラメータにstateは対応しないらしいのでcomputedで取得した値を動的パラメータへ入れ込む
     const passwordRef = computed(() => state.password)
     const rules = {
@@ -75,6 +86,23 @@ export default defineComponent({
     }
     const validations = {}
     const v$ = useVuelidate(validations, {})
+
+    onBeforeMount(async () => {
+      const route = useRoute()
+      const router = useRouter()
+      const { token } = route.value.query
+      await ctx.$gateway.reset.password.tokenVerify(token)
+        .catch((err) => {
+          /*
+          ctx.$accessor.toast.show({
+            message: '有効期限が切れています。再度リセットメールを送信してください。',
+            color: 'error',
+          })
+          */
+          console.log(err)
+          router.push('/auth/login')
+        })
+    })
     const handleChangePassword = async () => {
       const valid = await v$.value.$validate()
       if (!valid) return

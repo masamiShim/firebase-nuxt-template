@@ -10,10 +10,11 @@
             <v-col>
               <my-input-text-field
                 v-model="state.email"
-                :check="rules.email"
+                :check="{ email: rules.email}"
                 label="メールアドレス"
                 hint="登録しているメールアドレスを入力してください"
                 persistent-hint
+                lazy
               ></my-input-text-field>
             </v-col>
           </v-row>
@@ -24,21 +25,27 @@
       <v-spacer />
       <v-btn text
              :disabled="v$.$invalid"
-             color="primary">リセット用メールを送信する</v-btn>
+             color="primary"
+             @click="handleResetPassword"
+      >リセット用メールを送信する
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "@nuxtjs/composition-api"
+import { defineComponent, reactive, ref, useContext } from "@nuxtjs/composition-api"
 import { email, helpers, required } from "@vuelidate/validators"
 import { useVuelidate } from "@vuelidate/core"
 import MyInputTextField from "@/components/form/MyInputTextField.vue"
 
 export default defineComponent({
   components: { MyInputTextField },
-  layout: 'noauth',
+  layout: "noauth",
   setup(_, __) {
+
+    const ctx = useContext()
+    const loading = ref<Boolean>(false)
     const state = reactive({
       email: ""
     })
@@ -52,7 +59,24 @@ export default defineComponent({
     const validations = {}
     const v$ = useVuelidate(validations, {})
 
-    return { state, rules, v$ }
+    const handleResetPassword = async () => {
+      const valid = await v$.value.$validate()
+      if (!valid) return
+
+      loading.value = true
+      await ctx.$gateway.reset.password
+        .resetPasswordRequest(state.email).then(() => {
+          ctx.$accessor.toast.show({ message: "リセット用リンクをメールアドレスに送信しました。", color: "success" })
+        })
+        .catch((err) => {
+          console.error(err)
+        })
+        .finally(() => {
+          loading.value = false
+        })
+    }
+
+    return { state, rules, v$, handleResetPassword }
   }
 })
 </script>

@@ -30,6 +30,7 @@
       <v-btn
         color="primary"
         :disabled="v$.$invalid"
+        :loading="loading"
         @click="handleLogin"
       >
         ログイン
@@ -40,7 +41,7 @@
 
 <script lang="ts">
 import { email, helpers, required } from "@vuelidate/validators"
-import { defineComponent, reactive, useContext, useRouter } from "@nuxtjs/composition-api"
+import { defineComponent, onBeforeMount, reactive, ref, useContext, useRouter } from "@nuxtjs/composition-api"
 import { useVuelidate } from "@vuelidate/core"
 import MyInputTextField from "@/components/form/MyInputTextField.vue"
 
@@ -53,10 +54,18 @@ export default defineComponent({
   components: { MyInputTextField },
   layout: "noauth",
   setup(_) {
-    const { $accessor } = useContext()
+    const ctx = useContext()
+    const { $accessor, $gateway } = ctx
     const router = useRouter()
 
+    const loading = ref<Boolean>(false)
 
+    onBeforeMount(() => {
+      const router = useRouter()
+      if ($accessor.auth.isAuthorized) {
+        router.push("/service")
+      }
+    })
     const state = reactive<LoginForm>({
       email: "",
       password: ""
@@ -76,12 +85,23 @@ export default defineComponent({
     const v$ = useVuelidate(validations, {})
 
 
-    const handleLogin = () => {
-      $accessor.auth.login({ accessToken: "a", refreshToken: "b" })
-      router.push("/service")
+    const handleLogin = async () => {
+      loading.value = true
+      await setTimeout(async () => {
+        await $gateway.auth.loginByEmail(state.email, state.password)
+          .then((res) => {
+            $accessor.auth.login({ accessToken: res.body.accessToken, refreshToken: res.body.refreshToken })
+            router.push("/service")
+          }).catch((err: any) => {
+            console.log(err.message)
+          }).finally(() => {
+            loading.value = false
+          })
+      }, 1000)
+
     }
 
-    return { state, rules, handleLogin, v$ }
+    return { state, rules, loading, handleLogin, v$ }
 
   }
 })

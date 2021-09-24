@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-
+    <my-toast />
     <v-main>
       <v-container>
         <Nuxt />
@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import MyToast from "@/components/util/MyToast"
 export default {
+  components: { MyToast },
   data() {
     return {
       clipped: false,

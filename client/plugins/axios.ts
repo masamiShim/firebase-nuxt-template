@@ -2,6 +2,8 @@ import { Context } from "@nuxt/types"
 import { Inject, Plugin } from "@nuxt/types/app"
 import qs from "qs"
 import { Gateways } from "~/types/vue-app"
+import AuthGateway from "@/gateway/AuthGateway"
+import PasswordResetGateway from "@/gateway/PasswordResetGateway"
 
 const BadRequestStatus = 400
 const UnAuthorizedStatus = 401
@@ -29,6 +31,7 @@ const axiosPlugin: Plugin = (ctx: Context, inject: Inject) => {
     // 400
     if (error.response?.status === BadRequestStatus) {
       if ("body" in error.response.data) {
+        /*
         const message = ctx.app.i18n.tc(
           error.response.data.body.reason,
           0,
@@ -36,16 +39,26 @@ const axiosPlugin: Plugin = (ctx: Context, inject: Inject) => {
         )
         // @ts-ignore
         context.$toast.error(message)
-      }
-      // eslint-disable-next-line no-prototype-builtins
-      if ("errorMessage" in error.response.data) {
-        const messages = error.response.data.errorMessage.map((mes: string) => {
-          return ctx.app.i18n.tc(mes, 0, "ja")
+        */
+        // [{k1:{k2: }}]
+        const message = error.response.data.body.map((v1: any) => {
+          // {k1:{k2: }}
+          const messages: any[] = []
+          for (const v12 of Object.values<any[]>(v1)) {
+            // {k2: v2, k3: v3}
+            messages.push(...Object.values(v12))
+          }
+          return messages
         })
-        // @ts-ignore
-        context.$toast.error(messages.join("<br>"))
+        ctx.$accessor.toast.show({
+          message: message.join("\n"),
+          color: "error",
+          timeout: 4000,
+        })
+        // alert(message.join("\n"))
+        throw new Error(message.join("::"))
       }
-      return error.response
+      return
     }
 
     // 401
@@ -54,30 +67,26 @@ const axiosPlugin: Plugin = (ctx: Context, inject: Inject) => {
       // 再認証失敗時は認証情報を破棄/リクエストされたページを記録してログインへリダイレクト
       // 再認証成功時は再度リクエストを実行
       const refreshToken = ctx.$accessor.auth.refreshToken
+      if (!refreshToken) {
+        await ctx.$accessor.auth.logout()
+        // await AuthStore.redirectRoute(context.route.path)
+        await ctx.$accessor.auth.redirectRoute()
+        // ログインページへリダイレクト
+        ctx.redirect("/login")
+        return
+      }
       const originalRequest = error.config
 
       try {
         const refreshedTokenPair = await ctx.$gateway.auth.refresh(refreshToken)
 
-        if (
-          refreshedTokenPair.isServerError() ||
-          refreshedTokenPair.isBadRequest()
-        ) {
-          // 認証情報の破棄
-          await ctx.$accessor.auth.logout()
-          // await AuthStore.redirectRoute(context.route.path)
-          await ctx.$accessor.auth.redirectRoute()
-          // ログインページへリダイレクト
-          ctx.redirect("/login")
-        } else {
-          await ctx.$accessor.auth.setToken({
-            accessToken: refreshedTokenPair.result.accessToken,
-            refreshToken: refreshedTokenPair.result.refreshToken,
-          })
-          // トークンを更新して実施
-          originalRequest.headers.Authorization = `Bearer ${refreshedTokenPair.result.accessToken}`
-          return await ctx.$axios.request(originalRequest)
-        }
+        await ctx.$accessor.auth.setToken({
+          accessToken: refreshedTokenPair.body.accessToken,
+          refreshToken: refreshedTokenPair.body.refreshToken,
+        })
+        // トークンを更新して実施
+        originalRequest.headers.Authorization = `Bearer ${refreshedTokenPair.body.accessToken}`
+        return await ctx.$axios.request(originalRequest)
       } catch (err) {
         // 認証情報の破棄
         await ctx.$accessor.auth.logout()
@@ -92,9 +101,12 @@ const axiosPlugin: Plugin = (ctx: Context, inject: Inject) => {
 
   // TODO: APIの定義とかはここにまとめる
   const gateways: Gateways = {
-    auth: [],
+    auth: new AuthGateway(ctx.$axios),
+    reset: {
+      password: new PasswordResetGateway(ctx.$axios),
+    },
   }
-  inject("gateways", gateways)
+  inject("gateway", gateways)
 }
 
 export default axiosPlugin

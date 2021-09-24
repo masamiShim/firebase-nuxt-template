@@ -3,9 +3,14 @@
 import Vue from "vue"
 import "@vue/composition-api"
 import { accessorType } from "@/store"
+import AuthGateway from "@/gateway/AuthGateway"
+import PasswordResetGateway from "@/gateway/PasswordResetGateway"
 
 export type Gateways = {
-  auth: any
+  auth: AuthGateway
+  reset: {
+    password: PasswordResetGateway
+  }
 }
 declare module "vue/types/vue" {
   interface Vue {
@@ -19,6 +24,7 @@ declare module "@nuxt/types" {
     readonly $gateway: Gateways
     readonly $accessor: typeof accessorType
   }
+
   interface Context {
     readonly $gateway: Gateways
     readonly $accessor: typeof accessorType
