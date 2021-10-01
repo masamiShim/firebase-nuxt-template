@@ -4,11 +4,11 @@
         <v-card-title class="indigo">
           <slot name="modal-title"><span class="white--text">title</span></slot>
         </v-card-title>
-        <v-card-text class="pa-3 black--text">
+        <v-card-text class="pa-5 black--text">
           <slot name="modal-body">body</slot>
         </v-card-text>
         <v-card-actions>
-          <v-btn text class="text--secondary" color="gray" @click="handleClose">閉じる</v-btn>
+          <v-btn text class="text--secondary" color="gray" @click.stop="handleClose">閉じる</v-btn>
           <v-spacer />
           <slot name="modal-action"></slot>
         </v-card-actions>

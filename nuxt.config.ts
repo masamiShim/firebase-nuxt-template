@@ -1,6 +1,9 @@
 import { NuxtConfig } from "@nuxt/types"
 
 const nuxtConfig: NuxtConfig = {
+  env: {
+    fileURL: process.env.FILE_URL || "http://localhost:3000",
+  },
   generate: {
     interval: 2000,
   },
@@ -65,6 +68,10 @@ const nuxtConfig: NuxtConfig = {
       target: "http://localhost:3000",
       pathRewrite: { "^/api/": "/api/" },
     },
+    "/uploads/": {
+      target: "http://localhost:3000",
+      pathRewrite: { "^/uploads/": "" },
+    },
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
@@ -87,10 +94,17 @@ const nuxtConfig: NuxtConfig = {
   build: {
     transpile: ["/typed-vuex/"],
   },
-
+  publicRuntimeConfig: {
+    file: {
+      url: process.env.FILE_URL,
+    },
+  },
   privateRuntimeConfig: {
     axios: {
       baseURL: process.env.BASE_URL,
+    },
+    file: {
+      url: process.env.FILE_URL,
     },
   },
 }

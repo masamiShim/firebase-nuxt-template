@@ -91,6 +91,13 @@ export default defineComponent({
       const route = useRoute()
       const router = useRouter()
       const { token } = route.value.query
+      if(!token || Array.isArray(token)) {
+        ctx.$accessor.toast.show({
+          message: '無効な遷移です',
+          color: 'error',
+        })
+        return
+      }
       await ctx.$gateway.reset.password.tokenVerify(token)
         .catch((err) => {
           /*

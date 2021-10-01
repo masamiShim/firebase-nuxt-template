@@ -1,5 +1,6 @@
 <template>
   <v-text-field v-model="_value"
+                dense
                 :error="v$.$invalid"
                 :error-messages="v$.$errors.map((e) => e.$message)"
                 v-bind="$attrs"
@@ -37,7 +38,7 @@ export default defineComponent({
       set: (v) => emit("input", v)
     })
 
-    const key = Object.keys(props.check)[0]
+    const key = Object.keys(props.check || {})[0]
 
     const isLazy = attrs.lazy !== undefined
     const v$ = useVuelidate(props.check || {}, { [key]: _value }, { $lazy: isLazy, $autoDirty: true })

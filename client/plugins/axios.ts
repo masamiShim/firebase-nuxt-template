@@ -4,6 +4,8 @@ import qs from "qs"
 import { Gateways } from "~/types/vue-app"
 import AuthGateway from "@/gateway/AuthGateway"
 import PasswordResetGateway from "@/gateway/PasswordResetGateway"
+import FileUploadGateway from "@/gateway/FileUploadGateway"
+import FileDownloadGateway from "@/gateway/FileDownloadGateway"
 
 const BadRequestStatus = 400
 const UnAuthorizedStatus = 401
@@ -102,6 +104,10 @@ const axiosPlugin: Plugin = (ctx: Context, inject: Inject) => {
   // TODO: APIの定義とかはここにまとめる
   const gateways: Gateways = {
     auth: new AuthGateway(ctx.$axios),
+    file: {
+      upload: new FileUploadGateway(ctx.$axios),
+      download: new FileDownloadGateway(ctx.$axios),
+    },
     reset: {
       password: new PasswordResetGateway(ctx.$axios),
     },

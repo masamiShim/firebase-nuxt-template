@@ -11,6 +11,8 @@
           Welcome to the Vuetify + Nuxt.js template
         </v-card-title>
         <v-card-text>
+          <my-file-upload :value.sync="state.files" ></my-file-upload>
+          <my-file-download-button label="download" :file="state.files.length ? state.files[0] : undefined"></my-file-download-button>
           <my-input-text-field
             v-model="state.emailAddress"
             :check="rules.emailAddress" />
@@ -56,17 +58,21 @@
 <script lang="ts">
 
 import { email, helpers, required } from "@vuelidate/validators"
-import { defineComponent, reactive, ref } from "@nuxtjs/composition-api"
+import { defineComponent, reactive, ref, useContext } from "@nuxtjs/composition-api"
 import MyInputTextField from "@/components/form/MyInputTextField.vue"
 import Modal from "@/components/modal/ModalBase.vue"
+import MyFileUpload from "@/components/form/MyFileUpload.vue"
+import MyFileDownloadButton from "@/components/form/MyFileDownloadButton.vue"
 
 export default defineComponent({
-  components: { Modal, MyInputTextField },
+  components: { MyFileDownloadButton, MyFileUpload, Modal, MyInputTextField },
   setup(_, __) {
+    const ctx = useContext()
     const open = ref<Boolean>(false)
 
     const state = reactive({
-      emailAddress: "eeeee@bbbb.com"
+      emailAddress: "eeeee@bbbb.com",
+      files: []
     })
     const rules = {
       emailAddress: {
@@ -75,9 +81,23 @@ export default defineComponent({
       }
     }
 
-    const handleOpen = () => { open.value = true }
+    const handleOpen = () => {
+      open.value = true
+    }
 
-    return { state, rules, open, handleOpen }
+    const handleDownload = async () => {
+      const res = await ctx.$gateway.file.download.download(state.files[0].url)
+      const url = (window.URL || window.webkitURL).createObjectURL(res)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = state.files[0].name
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+
+    }
+
+    return { state, rules, open, handleOpen, handleDownload }
   }
 })
 </script>

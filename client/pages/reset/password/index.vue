@@ -45,7 +45,7 @@ export default defineComponent({
   setup(_, __) {
 
     const ctx = useContext()
-    const loading = ref<Boolean>(false)
+    const loading = ref<boolean>(false)
     const state = reactive({
       email: ""
     })

@@ -117,13 +117,13 @@ export default defineComponent({
       items: [
         {
           icon: "mdi-apps",
-          title: "Welcome",
-          to: "/"
+          title: "Dashboard",
+          to: "/service"
         },
         {
           icon: "mdi-chart-bubble",
-          title: "Inspire",
-          to: "/inspire"
+          title: "Matter",
+          to: "/service/matter"
         }
       ],
       miniVariant: false,

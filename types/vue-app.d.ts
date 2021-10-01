@@ -5,11 +5,17 @@ import "@vue/composition-api"
 import { accessorType } from "@/store"
 import AuthGateway from "@/gateway/AuthGateway"
 import PasswordResetGateway from "@/gateway/PasswordResetGateway"
+import FileUploadGateway from "@/gateway/FileUploadGateway"
+import FileDownloadGateway from "@/gateway/FileDownloadGateway"
 
 export type Gateways = {
   auth: AuthGateway
   reset: {
     password: PasswordResetGateway
+  }
+  file: {
+    upload: FileUploadGateway
+    download: FileDownloadGateway
   }
 }
 declare module "vue/types/vue" {
