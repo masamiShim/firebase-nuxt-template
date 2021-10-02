@@ -1,26 +1,27 @@
 <template>
-  <v-text-field v-model="_value"
-                dense
-                :error="v$.$invalid"
-                :error-messages="v$.$errors.map((e) => e.$message)"
-                v-bind="$attrs"
-                @input="v$.$touch()"
-                @blur="v$.$touch()"
-  >
-
-  </v-text-field>
+  <div>
+    <v-radio-group v-model="val" class="mt-1" style="height: 18px" dense row @input="v$.$touch()">
+      <v-radio v-for="item in items" :key="item.value" :label="item.label" :value="item.value"
+               :checked="val === String(item.value)">
+      </v-radio>
+    </v-radio-group>
+    <p v-if="v$.$invalid" class="error--text">{{v$.$errors}}</p>
+  </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, PropType } from "@nuxtjs/composition-api"
 import { useVuelidate } from "@vuelidate/core"
-import { CheckProp } from "~/types/application"
-
+import { CheckProp, SelectionType } from "~/types/application"
 
 export default defineComponent({
   props: {
     value: {
       type: String,
+      required: true
+    },
+    items: {
+      type: Array as PropType<SelectionType[]>,
       required: true
     },
     check: {
@@ -31,7 +32,7 @@ export default defineComponent({
     }
   },
   setup(props, { emit, attrs }) {
-    const _value = computed({
+    const val = computed<string>({
       get: () => props.value,
       set: (v) => emit("input", v)
     })
@@ -39,7 +40,7 @@ export default defineComponent({
     const key = Object.keys(props.check || {})[0]
 
     const isLazy = attrs.lazy !== undefined
-    const v$ = useVuelidate(props.check || {}, { [key]: _value }, { $lazy: isLazy, $autoDirty: true })
+    const v$ = useVuelidate(props.check || {}, { [key]: val }, { $lazy: isLazy, $autoDirty: true })
 
     onMounted(async () => {
       if (!isLazy) {
@@ -47,7 +48,8 @@ export default defineComponent({
       }
     })
 
-    return { _value, v$ }
+    return { val, v$ }
+
   }
 })
 </script>

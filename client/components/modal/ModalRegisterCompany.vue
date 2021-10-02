@@ -1,6 +1,8 @@
 <template>
   <modal-base :open.sync="dialogOpen">
-    <template #modal-title><span class="white--text">会社登録</span></template>
+    <template #modal-title>
+      <span class="white--text">会社登録</span>
+    </template>
     <template #modal-body>
       <v-row>
         <v-col>
@@ -60,7 +62,9 @@
             label="請求書送信用メールアドレス"
             lazy
           ></my-input-text-field>
-
+        </v-col>
+        <v-col>
+          <v-checkbox label="電子請求可"></v-checkbox>
         </v-col>
       </v-row>
     </template>
@@ -79,6 +83,11 @@ import MyInputTextField from "@/components/form/MyInputTextField.vue"
 export default defineComponent({
   components: { MyInputTextField, ModalBase },
   props: {
+    id: {
+      type: String,
+      required: false,
+      default: 'new'
+    },
     open: {
       type: Boolean,
       required: true

@@ -40,10 +40,10 @@
 </template>
 
 <script lang="ts">
-import { email, helpers, required } from "@vuelidate/validators"
 import { defineComponent, onBeforeMount, reactive, ref, useContext, useRouter } from "@nuxtjs/composition-api"
 import { useVuelidate } from "@vuelidate/core"
 import MyInputTextField from "@/components/form/MyInputTextField.vue"
+import { isEmail, isRequire } from "@/helper/validator/validator.helper"
 
 type LoginForm = {
   email: string,
@@ -73,11 +73,11 @@ export default defineComponent({
 
     const rules = {
       email: {
-        required: helpers.withMessage("メールアドレスを入力して下さい", required),
-        email: helpers.withMessage("メールアドレスの形式が不正です", email)
+        required: isRequire,
+        email: isEmail
       },
       password: {
-        required: helpers.withMessage("パスワードを入力して下さい", required)
+        required: isRequire
       }
     }
 

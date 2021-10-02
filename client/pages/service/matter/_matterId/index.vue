@@ -10,7 +10,8 @@
         </v-row>
         <v-row dense>
           <v-col>
-            <my-crud-autocomplete :items="state.companyList" label="受注元" @create="handleOpenCompanyDialog"></my-crud-autocomplete>
+            <my-crud-autocomplete :items="state.companyList" label="受注元"
+                                  @create="handleOpenCompanyDialog"></my-crud-autocomplete>
           </v-col>
         </v-row>
         <v-checkbox
@@ -24,7 +25,8 @@
           <p>仲介会社情報</p>
           <v-row v-for="(_, index) of state.mediationList" :key="index" dense>
             <v-col>
-              <my-crud-autocomplete :items="state.companyList" :label="`${index + 1}次受け`"></my-crud-autocomplete>
+              <my-crud-autocomplete :items="state.companyList" :label="`${index + 1}次受け`"
+                                    @create="handleOpenCompanyDialog('new')"></my-crud-autocomplete>
             </v-col>
           </v-row>
           <v-row>
@@ -41,57 +43,13 @@
         <v-btn color="primary">登録する</v-btn>
       </v-card-actions>
     </v-card>
-    <v-card class="mt-5">
-      <v-card-title class="indigo">
-        <span class="white--text">契約内容</span>
-      </v-card-title>
-      <v-card-text class="pa-3">
-        <v-row>
-          <v-col>
-            契約期間(FROM)
-          </v-col>
-          <v-col>
-            契約期間(TO)
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            時間幅
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            単価
-          </v-col>
-          <v-col>
-            超過
-          </v-col>
-          <v-col>
-            控除
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            精算時間(30分毎)
-          </v-col>
-          <v-col>
-            業務報告書の要否
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            交通費/宿泊費請求
-          </v-col>
-          <v-col>
-            延長/中途解約の告知
-          </v-col>
-          <v-col>
-            NDA
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-    <register-company :open.sync="openCompanyDialog"></register-company>
+    <v-row class="mt-5">
+      <v-col>
+        <matter-contract-list />
+      </v-col>
+    </v-row>
+
+    <register-company :id="handleCompanyId" :open.sync="openCompanyDialog"></register-company>
   </div>
 
 </template>
@@ -100,25 +58,37 @@
 import { defineComponent, reactive, ref } from "@nuxtjs/composition-api"
 import MyCrudAutocomplete from "@/components/form/MyCrudAutocomplete.vue"
 import RegisterCompany from "@/components/modal/ModalRegisterCompany.vue"
+import MatterContractList from "@/components/service/matter/MatterContractList.vue"
 
 export default defineComponent({
-  components: { RegisterCompany, MyCrudAutocomplete },
+  components: { MatterContractList, RegisterCompany, MyCrudAutocomplete },
   setup() {
-    const check = ref < boolean > (false)
-    const update = ref < boolean > (true)
+    const check = ref<boolean>(false)
+    const update = ref<boolean>(true)
     const openCompanyDialog = ref<boolean>(false)
+    const handleCompanyId = ref<string>("new")
     const state = reactive({
       mediationList: [""],
-      companyList: ["a","b","c"],
+      companyList: ["BAMV合同会社", "exat株式会社", "LHC", "日鉄ソリューション"]
     })
 
     const addMediation = () => {
       state.mediationList.push("")
     }
-    const handleOpenCompanyDialog = () => {
+    const handleOpenCompanyDialog = (id?: string) => {
       openCompanyDialog.value = true
+      handleCompanyId.value = id || "new"
     }
-    return { check, state, openCompanyDialog,handleOpenCompanyDialog ,addMediation, update }
+
+    return {
+      check,
+      state,
+      openCompanyDialog,
+      handleOpenCompanyDialog,
+      handleCompanyId,
+      addMediation,
+      update
+    }
   }
 })
 </script>

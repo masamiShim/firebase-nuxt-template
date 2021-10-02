@@ -9,13 +9,15 @@ export default class FileUploadGateway {
   }
 
   public async upload(
-    files: File[]
+    files: File[],
+    isPublic: boolean = false
   ): Promise<MyResponse<{ key: string; url: string; name: string }[]>> {
     const endpoint = "/upload/temporary"
     const data = new FormData()
     for (const file of files) {
       data.append("files[]", file)
     }
+    data.append("isPublic", String(isPublic))
     return await this.axios.$post(endpoint, data)
   }
 }

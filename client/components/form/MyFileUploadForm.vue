@@ -1,32 +1,19 @@
 <template>
-  <div>
-    <template v-if="getFiles.length">
-      <v-row>
-        <v-col v-for="file in getFiles" :key="file.key" class="text-center">
-          <my-image :src="file.url"
-                    class="grey lighten-2"
-          ></my-image>
-          <label class="caption">{{ file.name }}</label>
-        </v-col>
-      </v-row>
-    </template>
     <v-file-input
       dense
       :loading="loading"
       @change="handleChangeUpload"
     ></v-file-input>
-  </div>
 </template>
 
 <script lang="ts">
 
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api"
 import { FileUploadContainer } from "@/container/FileUploadContainer"
-import MyImage from "@/components/util/MyImage.vue"
 import { UploadFile } from "~/types/application"
 
+
 export default defineComponent({
-  components: { MyImage },
   props: {
     prev: {
       type: Array as PropType<UploadFile[]>,

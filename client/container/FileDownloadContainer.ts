@@ -1,5 +1,5 @@
 import { ref, useContext } from "@nuxtjs/composition-api"
-import { UploadFile } from "@/container/FileUploadContainer"
+import { UploadFile } from "~/types/application"
 
 export const FileDownloadContainer = () => {
   const ctx = useContext()

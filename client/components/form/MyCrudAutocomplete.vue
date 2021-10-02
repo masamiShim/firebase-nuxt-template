@@ -19,7 +19,7 @@
             color="indigo"
             v-bind="attrs"
             v-on="on"
-            @click="handler.create()"
+            @click.stop="handler.create()"
           >
             <v-icon dark>
               mdi-plus

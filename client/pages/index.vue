@@ -11,7 +11,7 @@
           Welcome to the Vuetify + Nuxt.js template
         </v-card-title>
         <v-card-text>
-          <my-file-upload :value.sync="state.files" ></my-file-upload>
+          <my-file-upload :value.sync="state.files" :is-public="true"></my-file-upload>
           <my-file-download-button label="download" :file="state.files.length ? state.files[0] : undefined"></my-file-download-button>
           <my-input-text-field
             v-model="state.emailAddress"

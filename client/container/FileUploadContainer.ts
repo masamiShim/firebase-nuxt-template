@@ -5,12 +5,7 @@ import {
   useContext,
   WritableComputedRef,
 } from "@nuxtjs/composition-api"
-
-export type UploadFile = {
-  key: string
-  url: string
-  name: string
-}
+import { UploadFile } from "~/types/application"
 
 type State = {
   fileUrl: string
@@ -20,7 +15,8 @@ type State = {
 
 export const FileUploadContainer = (
   prev: UploadFile[],
-  target: WritableComputedRef<UploadFile[]>
+  target: WritableComputedRef<UploadFile[]>,
+  isPublic: boolean
 ) => {
   const ctx = useContext()
 
@@ -45,9 +41,9 @@ export const FileUploadContainer = (
   // API操作で分けた方が良さそう？
   const upload = async (e: File | File[]) => {
     if (Array.isArray(e)) {
-      return await ctx.$gateway.file.upload.upload(e)
+      return await ctx.$gateway.file.upload.upload(e, isPublic)
     } else {
-      return await ctx.$gateway.file.upload.upload([e])
+      return await ctx.$gateway.file.upload.upload([e], isPublic)
     }
   }
 
