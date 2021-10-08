@@ -1,92 +1,57 @@
 <template>
   <v-app dark>
     <global-loader />
-    <my-toast/>
-    <v-navigation-drawer
-      v-model="state.drawer"
-      :mini-variant="state.miniVariant"
-      :clipped="state.clipped"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in state.items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="state.clipped"
-      fixed
-      app
-    >
-      <v-app-bar-nav-icon @click.stop="state.drawer = !state.drawer" />
-      <v-btn
-        icon
-        @click.stop="state.miniVariant = !state.miniVariant"
+    <my-toast />
+    <header>
+      <v-app-bar
+        color="#ffffff"
+        flat
       >
-        <v-icon>mdi-{{ `chevron-${state.miniVariant ? "right" : "left"}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="state.clipped = !state.clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="state.fixed = !state.fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="state.title" />
-      <v-spacer />
-      <v-btn
-        icon
-        @click.stop="state.rightDrawer = !state.rightDrawer"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
-    </v-app-bar>
-    <v-main>
-      <v-container v-show="!globalLoading">
+        <v-app-bar-title>{{ state.title }}</v-app-bar-title>
+
+        <v-spacer></v-spacer>
+
+        <v-btn icon>
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+
+        <v-btn icon @click="showCartModal = true">
+          <v-badge
+            color="blue"
+            content="6"
+          >
+            <v-icon>mdi-cart</v-icon>
+          </v-badge>
+        </v-btn>
+        <v-btn icon>
+          <v-icon>mdi-dots-vertical</v-icon>
+        </v-btn>
+
+        <template #extension>
+          <v-tabs fixed-tabs>
+            <v-tab nuxt to="/">Home</v-tab>
+            <v-tab nuxt to="/about">ABOUT</v-tab>
+            <v-tab nuxt to="/blog">BLOG</v-tab>
+            <v-tab nuxt to="/contact">CONTACT</v-tab>
+          </v-tabs>
+        </template>
+      </v-app-bar>
+    </header>
+    <main>
+      <v-main>
         <Nuxt />
-      </v-container>
-    </v-main>
-    <v-navigation-drawer
-      v-model="state.rightDrawer"
-      :right="state.right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="state.right = !state.right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer
-      :absolute="!state.fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+      </v-main>
+    </main>
+    <footer>
+      <v-footer
+        :absolute="!state.fixed"
+        app
+      >
+        <span>&copy; {{ new Date().getFullYear() }}</span>
+      </v-footer>
+    </footer>
+    <cart-modal :open.sync="showCartModal" @purchase="handlePurchase"></cart-modal>
+    <purchase-modal :open.sync="showPurchaseModal"> </purchase-modal>
   </v-app>
 </template>
 
@@ -94,26 +59,32 @@
 import {
   computed,
   defineComponent,
+  onBeforeMount,
   onMounted,
   onUnmounted,
   reactive,
-  useContext,
-  useRouter
+  ref,
+  useContext
 } from "@nuxtjs/composition-api"
 import MyToast from "@/components/util/MyToast.vue"
 import GlobalLoader from "@/components/util/GlobalLoader.vue"
+import CartModal from "@/components/modal/CartModal.vue"
+import PurchaseModal from "@/components/modal/PurchaseModal.vue"
 
 export default defineComponent({
-  components: { GlobalLoader, MyToast },
+  components: { PurchaseModal, GlobalLoader, MyToast, CartModal },
   setup(_) {
     const ctx = useContext()
     const globalLoading = computed(() => ctx.$accessor.loading.isLoading)
-    const router = useRouter()
 
     const state = reactive({
       clipped: false,
       drawer: false,
       fixed: false,
+      tabs: [
+        "Top",
+        ""
+      ],
       items: [
         {
           icon: "mdi-apps",
@@ -129,9 +100,10 @@ export default defineComponent({
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: "Vuetify.js"
+      title: "EC-Demo"
     })
     const visibleHandler = async () => {
+      /*
       if (window.document.visibilityState === "visible") {
         ctx.$accessor.loading.start()
         // コンテンツ表示
@@ -145,7 +117,7 @@ export default defineComponent({
       if (window.document.visibilityState === "hidden") {
         // コンテンツ非表示
       }
-
+      */
     }
     onMounted(() => {
       window.document.addEventListener("visibilitychange", visibleHandler)
@@ -153,7 +125,22 @@ export default defineComponent({
     onUnmounted(() => {
       window.document.removeEventListener("visibilitychange", visibleHandler)
     })
-    return { state, globalLoading }
+
+    const showCartModal = ref<boolean>(false)
+    const showPurchaseModal = ref<boolean>(false)
+
+    const handlePurchase = () => {
+      console.log('emit purchase')
+      showPurchaseModal.value = true
+    }
+    onBeforeMount(() => {
+      if (!window._payJp) {
+        const key = process.env.payJpPublicKey
+        window._payJp = window.Payjp(key)
+      }
+    })
+
+    return { state, globalLoading, showCartModal, showPurchaseModal, handlePurchase }
   }
 })
 </script>

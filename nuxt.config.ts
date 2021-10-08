@@ -3,6 +3,7 @@ import { NuxtConfig } from "@nuxt/types"
 const nuxtConfig: NuxtConfig = {
   env: {
     fileURL: process.env.FILE_URL || "http://localhost:3000",
+    payJpPublicKey: process.env.PAY_JP_PUBLIC_KEY || "dummy-key",
   },
   generate: {
     interval: 2000,
@@ -31,6 +32,7 @@ const nuxtConfig: NuxtConfig = {
       { name: "format-detection", content: "telephone=no" },
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+    script: [{ src: "https://js.pay.jp/v2/pay.js", defer: true }],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -85,9 +87,26 @@ const nuxtConfig: NuxtConfig = {
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ["~/assets/variables.scss"],
+    treeShake: true,
     theme: {
-      dark: false,
+      light: true,
+      options: {
+        customProperties: true,
+      },
+      themes: {
+        light: {
+          primary: "#ff1a6f",
+        },
+      },
     },
+    //    breakpoint: {
+    //      threshold: {
+    //        xs: 480,
+    //        sm: 600,
+    //        md: 860,
+    //        lg: 1280,
+    //     },
+    //    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -105,6 +124,9 @@ const nuxtConfig: NuxtConfig = {
     },
     file: {
       url: process.env.FILE_URL,
+    },
+    payJp: {
+      key: process.env.PAY_JP_PUBLIC_KEY,
     },
   },
 }

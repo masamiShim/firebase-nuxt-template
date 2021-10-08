@@ -8,8 +8,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from "@nuxtjs/composition-api"
-import { useVuelidate } from "@vuelidate/core"
+import { computed, defineComponent } from "@nuxtjs/composition-api"
 
 export default defineComponent({
   props: {
@@ -22,12 +21,12 @@ export default defineComponent({
       required: true
     },
   },
-  setup(props, { emit, attrs }) {
-    const val = computed<string>({
+  setup(props, { emit }) {
+    const val = computed<boolean>({
       get: () => props.value,
-      set: (v) => emit("input", v)
+      set: (v: boolean) => emit("input", v)
     })
-
+/*
     const key = Object.keys(props.check || {})[0]
 
     const isLazy = attrs.lazy !== undefined
@@ -38,8 +37,8 @@ export default defineComponent({
         await v$.value.$validate()
       }
     })
-
-    return { val, v$ }
+*/
+    return { val }
   }
 })
 </script>

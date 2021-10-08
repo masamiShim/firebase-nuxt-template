@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "@nuxtjs/composition-api"
-import { UploadFile } from "@/container/FileUploadContainer"
 import { FileDownloadContainer } from "@/container/FileDownloadContainer"
+import { UploadFile } from "~/types/application"
 
 export default defineComponent({
   props: {
