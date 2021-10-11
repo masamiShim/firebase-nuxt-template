@@ -4,6 +4,7 @@
       <v-card-title v-if="option.showTitle" class="indigo">
         <slot name="modal-title"><span class="white--text">title</span></slot>
       </v-card-title>
+      <slot name="header"></slot>
       <v-card-text class="pa-5 black--text">
         <slot name="modal-body">body</slot>
       </v-card-text>

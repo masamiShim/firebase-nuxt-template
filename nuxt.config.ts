@@ -96,6 +96,8 @@ const nuxtConfig: NuxtConfig = {
       themes: {
         light: {
           primary: "#ff1a6f",
+          danger: "#D50000",
+          enable: "#7986CB",
         },
       },
     },

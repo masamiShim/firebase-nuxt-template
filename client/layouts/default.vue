@@ -6,6 +6,8 @@
       <v-app-bar
         color="#ffffff"
         flat
+        fixed
+        height="64"
       >
         <v-app-bar-title>{{ state.title }}</v-app-bar-title>
 
@@ -17,11 +19,14 @@
 
         <v-btn icon @click="showCartModal = true">
           <v-badge
+            v-if="cartCount > 0"
             color="blue"
-            content="6"
+            :content="cartCount"
           >
             <v-icon>mdi-cart</v-icon>
           </v-badge>
+          <v-icon v-else>mdi-cart</v-icon>
+
         </v-btn>
         <v-btn icon>
           <v-icon>mdi-dots-vertical</v-icon>
@@ -37,21 +42,19 @@
         </template>
       </v-app-bar>
     </header>
-    <main>
-      <v-main>
-        <Nuxt />
-      </v-main>
-    </main>
+    <v-main class="pt-16 mt-12">
+      <Nuxt />
+    </v-main>
     <footer>
       <v-footer
         :absolute="!state.fixed"
         app
       >
-        <span>&copy; {{ new Date().getFullYear() }}</span>
+        <span>&copy; 2020 - {{ new Date().getFullYear() }}</span>
       </v-footer>
     </footer>
-    <cart-modal :open.sync="showCartModal" @purchase="handlePurchase"></cart-modal>
-    <purchase-modal :open.sync="showPurchaseModal"> </purchase-modal>
+    <cart-modal v-if="showCartModal" :open.sync="showCartModal" @purchase="handlePurchase"></cart-modal>
+    <purchase-modal v-if="showPurchaseModal" :open.sync="showPurchaseModal"></purchase-modal>
   </v-app>
 </template>
 
@@ -76,7 +79,7 @@ export default defineComponent({
   setup(_) {
     const ctx = useContext()
     const globalLoading = computed(() => ctx.$accessor.loading.isLoading)
-
+    const cartCount = computed(() => ctx.$accessor.cart.count)
     const state = reactive({
       clipped: false,
       drawer: false,
@@ -130,7 +133,6 @@ export default defineComponent({
     const showPurchaseModal = ref<boolean>(false)
 
     const handlePurchase = () => {
-      console.log('emit purchase')
       showPurchaseModal.value = true
     }
     onBeforeMount(() => {
@@ -140,7 +142,7 @@ export default defineComponent({
       }
     })
 
-    return { state, globalLoading, showCartModal, showPurchaseModal, handlePurchase }
+    return { state, cartCount, globalLoading, showCartModal, showPurchaseModal, handlePurchase }
   }
 })
 </script>

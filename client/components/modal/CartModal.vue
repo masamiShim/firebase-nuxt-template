@@ -4,115 +4,41 @@
       <span class="white--text">カート</span>
     </template>
     <template #modal-body>
-      <v-card class="pa-4">
-        <v-card-subtitle>商品名</v-card-subtitle>
-        <v-card-text>
-          <v-row>
-            <v-col class="col-md-3 col-sm-6">
-              <v-img
-                height="200"
-                width="200"
-                :src="`https://picsum.photos/500/300?image=5`"
-                :lazy-src="`https://picsum.photos/10/6?image=5`"
-                aspect-ratio="1"
-                class="grey lighten-2"
-              >
-                <template #placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular
-                      indeterminate
-                      color="grey lighten-5"
-                    ></v-progress-circular>
-                  </v-row>
-                </template>
-              </v-img>
-            </v-col>
-            <v-col class="col-sm-12 col-md-9">
-              <v-row dense>
-                <v-col>
-                  samplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesample
-                </v-col>
-              </v-row>
-              <v-row dense>
-                <v-col>
-                  価格： ¥300
-                </v-col>
-              </v-row>
-              <v-row dense>
-                <v-col>
-                  数量： 1 個
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
-      <v-card class="pa-4 mt-5">
-        <v-card-subtitle>商品名</v-card-subtitle>
+      <div v-if="!cartItems.length">
+        カートに商品がありません
+      </div>
+      <div v-else>
+
         <v-row>
-          <v-col class="col-md-3 col-sm-6">
-            <v-img
-              height="200"
-              width="200"
-              :src="`https://picsum.photos/500/300?image=5`"
-              :lazy-src="`https://picsum.photos/10/6?image=5`"
-              aspect-ratio="1"
-              class="grey lighten-2"
-            >
-              <template #placeholder>
-                <v-row
-                  class="fill-height ma-0"
-                  align="center"
-                  justify="center"
-                >
-                  <v-progress-circular
-                    indeterminate
-                    color="grey lighten-5"
-                  ></v-progress-circular>
-                </v-row>
-              </template>
-            </v-img>
-          </v-col>
-          <v-col class="col-sm-12 col-md-9">
-            <v-row dense>
-              <v-col>
-                samplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesamplesample
-              </v-col>
-            </v-row>
-            <v-row dense>
-              <v-col>
-                価格： ¥300
-              </v-col>
-            </v-row>
-            <v-row dense>
-              <v-col>
-                数量： 1 個
-              </v-col>
-            </v-row>
+          <v-col class="text-center"><span class="font-weight-bold">合計 {{ cartItems.length }}点</span></v-col>
+        </v-row>
+        <v-divider class="my-5" />
+        <v-row class="pa-3">
+          <v-col v-for="item in cartItems" :key="item.id" class="col-12 col-sm-6 col-md-4">
+            <cart-item :item="item"></cart-item>
           </v-col>
         </v-row>
-      </v-card>
-      <v-divider class="mt-5" />
-      <v-row>
-        <v-col class="text-right"><span class="font-weight-bold">小計 ¥300</span></v-col>
-      </v-row>
+
+        <v-divider class="my-5" />
+        <v-row>
+          <v-col class="text-center"><span class="font-weight-bold">合計 {{ cartItems.length }}点</span></v-col>
+        </v-row>
+      </div>
     </template>
     <template #modal-action>
-      <v-btn color="primary" @click.stop="movePurchase">購入手続きへ</v-btn>
+      <v-btn :disabled="!cartItems.length" color="primary" @click.stop="movePurchase">購入手続きへ</v-btn>
     </template>
   </modal-base>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@nuxtjs/composition-api"
+import { computed, defineComponent, onBeforeMount, reactive, useContext } from "@nuxtjs/composition-api"
 import ModalBase from "@/components/modal/ModalBase.vue"
+import CartItem from "@/components/cart/CartItem.vue"
+import { Product } from "~/types/application"
 
 export default defineComponent({
-  components: { ModalBase },
+  components: { CartItem, ModalBase },
   props: {
     open: {
       type: Boolean,
@@ -120,6 +46,10 @@ export default defineComponent({
     }
   },
   setup(prop, { emit }) {
+    const ctx = useContext()
+    const state = reactive<{ products: Product[] }>({
+      products: []
+    })
     const showModal = computed({
       get: () => prop.open,
       set: (v) => emit("update:open", v)
@@ -130,7 +60,19 @@ export default defineComponent({
       showModal.value = false
     }
 
-    return { showModal, movePurchase }
+    const cartItems = computed(() => {
+      const items = ctx.$accessor.cart.list
+      return state.products.filter((p) => items.includes(p.id))
+    })
+
+    onBeforeMount(async () => {
+      await ctx.$gateway.product.list("").then((res) => {
+        state.products = res.body
+      })
+    })
+
+
+    return { showModal, movePurchase, state, cartItems }
   }
 })
 </script>

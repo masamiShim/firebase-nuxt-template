@@ -1,6 +1,5 @@
 // TODO: import Vue忘れるとすごいめんどい
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import Vue from "vue"
 import "@vue/composition-api"
 import type { Framework } from "vuetify"
 import { accessorType } from "@/store"
@@ -8,6 +7,9 @@ import AuthGateway from "@/gateway/AuthGateway"
 import PasswordResetGateway from "@/gateway/PasswordResetGateway"
 import FileUploadGateway from "@/gateway/FileUploadGateway"
 import FileDownloadGateway from "@/gateway/FileDownloadGateway"
+import PurchaseGateway from "@/gateway/PurchaseGateway"
+import ProductGateway from "@/gateway/ProductGateway"
+import CartGateway from "@/gateway/CartGateway"
 
 export type Gateways = {
   auth: AuthGateway
@@ -18,6 +20,9 @@ export type Gateways = {
     upload: FileUploadGateway
     download: FileDownloadGateway
   }
+  purchase: PurchaseGateway
+  product: ProductGateway
+  cart: CartGateway
 }
 declare module "vue/types/vue" {
   interface Vue {

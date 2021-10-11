@@ -19,3 +19,13 @@ export type UploadFile = {
   url: string
   name: string
 }
+
+export type Product = {
+  id: number
+  src: string
+  lazySrc: string
+  name: string
+  description: string
+  price: number
+  createdAt: string
+}

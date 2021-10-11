@@ -3,6 +3,7 @@ import { getAccessorType } from "typed-vuex"
 import * as auth from "@/store/auth"
 import * as toast from "@/store/toast"
 import * as loading from "@/store/loading"
+import * as cart from "@/store/cart"
 
 export const state = () => ({})
 export const getters = {}
@@ -18,5 +19,6 @@ export const accessorType = getAccessorType({
     auth,
     toast,
     loading,
+    cart,
   },
 })

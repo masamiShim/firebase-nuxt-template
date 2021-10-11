@@ -6,6 +6,9 @@ import AuthGateway from "@/gateway/AuthGateway"
 import PasswordResetGateway from "@/gateway/PasswordResetGateway"
 import FileUploadGateway from "@/gateway/FileUploadGateway"
 import FileDownloadGateway from "@/gateway/FileDownloadGateway"
+import PurchaseGateway from "@/gateway/PurchaseGateway"
+import CartGateway from "@/gateway/CartGateway"
+import ProductGateway from "@/gateway/ProductGateway"
 
 const BadRequestStatus = 400
 const UnAuthorizedStatus = 401
@@ -111,6 +114,9 @@ const axiosPlugin: Plugin = (ctx: Context, inject: Inject) => {
     reset: {
       password: new PasswordResetGateway(ctx.$axios),
     },
+    purchase: new PurchaseGateway(ctx.$axios),
+    cart: new CartGateway(ctx.$axios),
+    product: new ProductGateway(ctx.$axios),
   }
   inject("gateway", gateways)
 }

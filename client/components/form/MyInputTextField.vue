@@ -28,6 +28,11 @@ export default defineComponent({
       required: false,
       default: () => {
       }
+    },
+    scope: {
+      type: [String, Boolean],
+      required: false,
+      default: true
     }
   },
   setup(props, { emit, attrs }) {
@@ -39,7 +44,8 @@ export default defineComponent({
     const key = Object.keys(props.check || {})[0]
 
     const isLazy = attrs.lazy !== undefined
-    const v$ = useVuelidate(props.check || {}, { [key]: _value }, { $lazy: isLazy, $autoDirty: true })
+    const scope = props.scope
+    const v$ = useVuelidate(props.check || {}, { [key]: _value }, { $lazy: isLazy, $autoDirty: true, $scope: scope })
 
     onMounted(async () => {
       if (!isLazy) {
