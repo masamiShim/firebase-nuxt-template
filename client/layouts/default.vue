@@ -104,6 +104,7 @@ import MyToast from "@/components/util/MyToast.vue"
 import GlobalLoader from "@/components/util/GlobalLoader.vue"
 
 export default defineComponent({
+  name: 'MyDefaultLayout',
   components: { GlobalLoader, MyToast },
   setup(_) {
     const ctx = useContext()
@@ -122,8 +123,8 @@ export default defineComponent({
         },
         {
           icon: "mdi-chart-bubble",
-          title: "Matter",
-          to: "/service/matter"
+          title: "商品登録",
+          to: "/service/product"
         }
       ],
       miniVariant: false,

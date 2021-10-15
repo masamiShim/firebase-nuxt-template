@@ -1,5 +1,5 @@
 import { NuxtAxiosInstance } from "@nuxtjs/axios"
-import { MyResponse } from "~/types/application"
+import { MyResponse, UploadFile } from "~/types/application"
 
 export default class FileUploadGateway {
   private readonly axios: NuxtAxiosInstance
@@ -11,7 +11,7 @@ export default class FileUploadGateway {
   public async upload(
     files: File[],
     isPublic: boolean = false
-  ): Promise<MyResponse<{ key: string; url: string; name: string }[]>> {
+  ): Promise<MyResponse<UploadFile[]>> {
     const endpoint = "/upload/temporary"
     const data = new FormData()
     for (const file of files) {

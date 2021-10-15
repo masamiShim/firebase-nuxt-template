@@ -8,7 +8,7 @@ export const FileDownloadContainer = () => {
   const handleDownload = async (file: UploadFile) => {
     loading.value = true
     await ctx.$gateway.file.download
-      .download(file.url)
+      .download(file.path)
       .then((res) => {
         const url = (window.URL || window.webkitURL).createObjectURL(res)
         const a = document.createElement("a")

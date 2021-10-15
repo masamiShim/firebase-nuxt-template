@@ -58,6 +58,7 @@ export const FileUploadContainer = (
 
     await upload(e)
       .then((res) => {
+        console.log("upload success")
         target.value = res.body
       })
       .catch((err) => {

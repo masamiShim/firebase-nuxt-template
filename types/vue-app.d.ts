@@ -7,6 +7,7 @@ import AuthGateway from "@/gateway/AuthGateway"
 import PasswordResetGateway from "@/gateway/PasswordResetGateway"
 import FileUploadGateway from "@/gateway/FileUploadGateway"
 import FileDownloadGateway from "@/gateway/FileDownloadGateway"
+import ProductGateway from "@/gateway/ProductGateway"
 
 export type Gateways = {
   auth: AuthGateway
@@ -16,6 +17,9 @@ export type Gateways = {
   file: {
     upload: FileUploadGateway
     download: FileDownloadGateway
+  }
+  admin: {
+    product: ProductGateway
   }
 }
 declare module "vue/types/vue" {

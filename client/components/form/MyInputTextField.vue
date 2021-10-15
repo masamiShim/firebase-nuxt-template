@@ -20,7 +20,7 @@ import { CheckProp } from "~/types/application"
 export default defineComponent({
   props: {
     value: {
-      type: String,
+      type: [String, Number],
       required: true
     },
     check: {

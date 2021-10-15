@@ -1,15 +1,27 @@
 <template>
-  <div>
+  <div style="position:relative">
     <template v-if="getFiles.length">
       <v-row>
         <v-col v-for="file in getFiles" :key="file.key" class="text-center">
-          <my-image :src="file.url"
+          <my-image :src="file.path"
+                    width="200"
+                    height="200"
                     class="grey lighten-2"
           ></my-image>
           <label class="caption">{{ file.name }}</label>
         </v-col>
+        <v-btn fab x-small color="error" style="position: absolute; top: 0; right: -16px" @click.stop="clear">
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
       </v-row>
     </template>
+    <template v-else>
+      <div class="text-center">
+        <v-sheet class="grey lighten-3" width="200" height="200"></v-sheet>
+        <label class="caption">no image</label>
+      </div>
+    </template>
+
     <v-file-input
       dense
       :loading="loading"
@@ -52,10 +64,18 @@ export default defineComponent({
 
     const container = FileUploadContainer(props.prev, _value, props.isPublic)
 
+
+    const clear = () => {
+      // container.state.cleared = true
+      _value.value = []
+      emit('clear')
+    }
+
     return {
       state: container.state,
       loading: container.loading,
       handleChangeUpload: container.handleChangeUpload,
+      clear,
       getFiles: container.getFiles
     }
   }

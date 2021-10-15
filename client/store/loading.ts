@@ -1,16 +1,16 @@
 import { actionTree, getterTree, mutationTree } from "typed-vuex"
 
 export const state = () => ({
-  loading: false,
+  _loading: false,
 })
 
 export const getters = getterTree(state, {
-  isLoading: (state) => state.loading,
+  isLoading: (state) => state._loading,
 })
 
 export const mutations = mutationTree(state, {
-  changeLoading: (state, isLoading: boolean) => {
-    state.loading = isLoading
+  CHANGE_LOADING: (state, isLoading: boolean) => {
+    state._loading = isLoading
   },
 })
 
@@ -18,10 +18,10 @@ export const actions = actionTree(
   { state },
   {
     start({ commit }) {
-      commit("changeLoading", true)
+      commit("CHANGE_LOADING", true)
     },
     complete({ commit }) {
-      commit("changeLoading", false)
+      commit("CHANGE_LOADING", false)
     },
   }
 )
