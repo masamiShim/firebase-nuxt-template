@@ -40,10 +40,12 @@
 </template>
 
 <script lang="ts">
+import firebase from "firebase"
 import { defineComponent, onBeforeMount, reactive, ref, useContext, useRouter } from "@nuxtjs/composition-api"
 import { useVuelidate } from "@vuelidate/core"
 import MyInputTextField from "@/components/form/MyInputTextField.vue"
 import { isEmail, isRequire } from "@/helper/validator/validator.helper"
+import UserCredential = firebase.auth.UserCredential
 
 type LoginForm = {
   email: string,
@@ -55,7 +57,7 @@ export default defineComponent({
   layout: "noauth",
   setup(_) {
     const ctx = useContext()
-    const { $accessor, $gateway } = ctx
+    const { $accessor } = ctx
     const router = useRouter()
 
     const loading = ref<Boolean>(false)
@@ -88,9 +90,14 @@ export default defineComponent({
     const handleLogin = async () => {
       loading.value = true
       await setTimeout(async () => {
-        await $gateway.auth.loginByEmail(state.email, state.password)
-          .then((res) => {
-            $accessor.auth.login({ accessToken: res.body.accessToken, refreshToken: res.body.refreshToken })
+        await ctx.$fire.auth.signInWithEmailAndPassword(state.email, state.password)
+          .then(async (res: UserCredential) => {
+            const userId = await res.user?.getIdToken()
+            if(!userId) {
+              router.push("/auth/login")
+              return
+            }
+            $accessor.auth.login({ accessToken: userId })
             router.push("/service")
           }).catch((err: any) => {
             console.log(err.message)

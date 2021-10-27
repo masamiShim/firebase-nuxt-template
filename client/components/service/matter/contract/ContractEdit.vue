@@ -147,9 +147,9 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api"
-import MyInputTextField from "@/components/form/MyInputTextField"
-import MyFileUploadForm from "@/components/form/MyFileUploadForm"
-import MyCheckBox from "@/components/form/MyCheckBox"
+import MyInputTextField from "@/components/form/MyInputTextField.vue"
+import MyFileUploadForm from "@/components/form/MyFileUploadForm.vue"
+import MyCheckBox from "@/components/form/MyCheckBox.vue"
 import MyRadioGroup from "@/components/form/MyRadioGroup.vue"
 import { CheckProp, SelectionType } from "~/types/application"
 import { MatterContractItem } from "@/components/modal/ModalRegisterMatterItemStore"

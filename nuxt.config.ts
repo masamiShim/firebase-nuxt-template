@@ -1,17 +1,15 @@
 import { NuxtConfig } from "@nuxt/types"
 
 const nuxtConfig: NuxtConfig = {
+  target: "static",
   env: {
-    fileURL: process.env.FILE_URL || "http://localhost:3000",
+    fileURL: process.env.FILE_URL || "http://localhost:3000"
   },
   generate: {
-    interval: 2000,
-  },
-  server: {
-    port: 3001,
+    interval: 2000
   },
   router: {
-    base: "/web/",
+    base: "/"
   },
   srcDir: "client/",
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -22,15 +20,15 @@ const nuxtConfig: NuxtConfig = {
     titleTemplate: "%s - front-nuxt-template",
     title: "front-nuxt-template",
     htmlAttrs: {
-      lang: "ja",
+      lang: "ja"
     },
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { hid: "description", name: "description", content: "" },
-      { name: "format-detection", content: "telephone=no" },
+      { name: "format-detection", content: "telephone=no" }
     ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -40,7 +38,7 @@ const nuxtConfig: NuxtConfig = {
   plugins: [
     "@/plugins/composition-api",
     "@/plugins/axios",
-    { src: "@/plugins/vuex-persist", mode: "client" },
+    { src: "@/plugins/vuex-persist", mode: "client" }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -54,7 +52,7 @@ const nuxtConfig: NuxtConfig = {
     "@nuxtjs/vuetify",
     // composition-api
     "@nuxtjs/composition-api/module",
-    "nuxt-typed-vuex",
+    "nuxt-typed-vuex"
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -62,51 +60,45 @@ const nuxtConfig: NuxtConfig = {
     "@nuxtjs/proxy",
     // https://go.nuxtjs.dev/axios
     "@nuxtjs/axios",
+    "@nuxtjs/firebase"
   ],
-  proxy: {
-    "/api/": {
-      target: "http://localhost:3000",
-      pathRewrite: { "^/api/": "/api/" },
-    },
-    "/uploads/": {
-      target: "http://localhost:3000",
-      pathRewrite: { "^/uploads/": "" },
-    },
-  },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     prefix: "/api/v1",
     host: "localhost",
     port: 3000,
     debug: true,
-    proxy: true,
+    proxy: true
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ["~/assets/variables.scss"],
     theme: {
-      dark: false,
+      dark: false
+    }
+  },
+
+  // firebase
+  firebase: {
+    config: {
+      apiKey: process.env.FB_API_KEY || "",
+      authDomain: process.env.FB_AUTH_DOMAIN || "",
+      projectId: process.env.FB_PROJECT_ID || "",
+      storageBucket: process.env.FB_STORAGE_BUCKET || "",
+      messagingSenderId: process.env.FB_MESSAGING_SENDER_ID || "",
+      appId: process.env.FB_APP_ID || "",
+      measurementId: process.env.FB_MESUREMENT_ID || ""
     },
+    services: {
+      auth: true
+    }
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: ["/typed-vuex/"],
-  },
-  publicRuntimeConfig: {
-    file: {
-      url: process.env.FILE_URL,
-    },
-  },
-  privateRuntimeConfig: {
-    axios: {
-      baseURL: process.env.BASE_URL,
-    },
-    file: {
-      url: process.env.FILE_URL,
-    },
-  },
+    transpile: ["/typed-vuex/"]
+  }
 }
 
 export default nuxtConfig

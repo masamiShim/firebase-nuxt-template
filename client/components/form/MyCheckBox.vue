@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from "@nuxtjs/composition-api"
+import { computed, defineComponent } from "@nuxtjs/composition-api"
 import { useVuelidate } from "@vuelidate/core"
 
 export default defineComponent({
@@ -20,24 +20,20 @@ export default defineComponent({
     label: {
       type: String,
       required: true
-    },
+    }
   },
-  setup(props, { emit, attrs }) {
-    const val = computed<string>({
+  setup(props, { emit }) {
+    const val = computed<boolean>({
       get: () => props.value,
       set: (v) => emit("input", v)
     })
 
+    /*
     const key = Object.keys(props.check || {})[0]
 
     const isLazy = attrs.lazy !== undefined
-    const v$ = useVuelidate(props.check || {}, { [key]: val }, { $lazy: isLazy, $autoDirty: true })
-
-    onMounted(async () => {
-      if (!isLazy) {
-        await v$.value.$validate()
-      }
-    })
+    */
+    const v$ = useVuelidate({}, {})
 
     return { val, v$ }
   }

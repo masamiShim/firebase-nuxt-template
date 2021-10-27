@@ -58,7 +58,7 @@ type SignupForm = {
 
 export default defineComponent({
   components: { MyInputTextField },
-  layout: 'noauth',
+  layout: "noauth",
   setup(_, __) {
 
     const ctx = useContext()
@@ -92,19 +92,14 @@ export default defineComponent({
 
     const handleSignup = async () => {
       loading.value = true
-      const data = {
-        email: state.email,
-        password: {
-          value: state.password,
-          confirmation: state.confirm
-        }
-      }
-      await ctx.$gateway.auth.signupByEmail(data)
+      await ctx.$fire.auth.createUserWithEmailAndPassword(
+        state.email,
+        state.password
+      )
         .catch((err) => console.log(err))
         .finally(() => {
           loading.value = false
         })
-
     }
 
     return { loading, state, rules, v$, handleSignup }

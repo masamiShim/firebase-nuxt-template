@@ -63,6 +63,7 @@ import MyInputTextField from "@/components/form/MyInputTextField.vue"
 import Modal from "@/components/modal/ModalBase.vue"
 import MyFileUpload from "@/components/form/MyFileUpload.vue"
 import MyFileDownloadButton from "@/components/form/MyFileDownloadButton.vue"
+import { UploadFile } from "~/types/application"
 
 export default defineComponent({
   components: { MyFileDownloadButton, MyFileUpload, Modal, MyInputTextField },
@@ -72,7 +73,7 @@ export default defineComponent({
 
     const state = reactive({
       emailAddress: "eeeee@bbbb.com",
-      files: []
+      files: [] as UploadFile[]
     })
     const rules = {
       emailAddress: {

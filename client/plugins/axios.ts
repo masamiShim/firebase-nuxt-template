@@ -68,7 +68,7 @@ const axiosPlugin: Plugin = (ctx: Context, inject: Inject) => {
       // リフレッシュトークンでの再認証
       // 再認証失敗時は認証情報を破棄/リクエストされたページを記録してログインへリダイレクト
       // 再認証成功時は再度リクエストを実行
-      const refreshToken = ctx.$accessor.auth.refreshToken
+      const refreshToken = ""
       if (!refreshToken) {
         await ctx.$accessor.auth.logout()
         // await AuthStore.redirectRoute(context.route.path)
@@ -84,7 +84,6 @@ const axiosPlugin: Plugin = (ctx: Context, inject: Inject) => {
 
         await ctx.$accessor.auth.setToken({
           accessToken: refreshedTokenPair.body.accessToken,
-          refreshToken: refreshedTokenPair.body.refreshToken,
         })
         // トークンを更新して実施
         originalRequest.headers.Authorization = `Bearer ${refreshedTokenPair.body.accessToken}`

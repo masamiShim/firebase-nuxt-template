@@ -2,7 +2,6 @@ import { actionTree, getterTree, mutationTree } from "typed-vuex"
 
 type AuthToken = {
   accessToken: string
-  refreshToken: string
 }
 
 const ignoreRoutes = ["/login", "/logout"]
@@ -16,7 +15,6 @@ export const state = () => ({
 export const getters = getterTree(state, {
   isAuthorized: (state) => !!state.auth,
   accessToken: (state) => state.auth?.accessToken,
-  refreshToken: (state) => state.auth?.refreshToken,
   resumeRoute: (state) => state.resumeRoute
 })
 
